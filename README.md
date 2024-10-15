@@ -20,13 +20,13 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
 ## Implementation explanation:
 
 ### 1.  -L (Limit):
-    - Can be called along with N (integer value to signify the limit), which will be stored in the $Limit variable.
-    - $Limit is initialized as an empty string.
-    - Since the -L is optional, in each command, the function `limit_output()` will be called. It checks if a limit exists and if so, the results will be limited to the value set by the $Limit variable.
+    Can be called along with N (integer value to signify the limit), which will be stored in the $Limit variable.
+    $Limit is initialized as an empty string.
+    Since the -L is optional, in each command, the function `limit_output()` will be called. It checks if a limit exists and if so, the results will be limited to the value set by the $Limit variable.
 
 ### 2. -c (Connection Attempts):
-    - Function: `count_connection_attempts()`.
-    - The command pipeline used:
+    Function: `count_connection_attempts()`.
+    The command pipeline used:
         ```
         awk '{print $1}' "$Filename" | sort | uniq -c | sort -nr | limit_output | awk '{print $2, $1}'
         ``` 
@@ -38,8 +38,8 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
         - `awk '{print $2, $1}'`: Rearranges the output to display the IP address first, followed by the count of connection attempts.
 
 ### 3. -2 (Successful Attempts) :
-    - Function: `count_successful_attempts()`.
-    - The command pipeline used:
+    Function: `count_successful_attempts()`.
+    The command pipeline used:
         ```
         awk '$9 == "200" {print $1}' "$Filename" | sort | uniq -c | sort -nr | limit_output | awk '{print $2, $1}'
         ```    
@@ -51,8 +51,8 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
         - `awk '{print $2, $1}'`: Outputs the IP addresses followed by the count of successful attempts.
 
 ### 4. -r (Common Result Codes):
-    - Function: `most_common()`.
-    - The command pipeline used:
+    Function: `most_common()`.
+    The command pipeline used:
         ```
         awk '{print $9, $1}' "$Filename" | sort | uniq -c | awk -v Limit="$Limit" '
     {
@@ -81,8 +81,8 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
         - Then it sorts and prints the results in the required pattern specified in the instruction.
 
 ### 5. -F (Failure Codes):
-    - Function: `most_common_failure()`.
-    - The command pipeline used:
+    Function: `most_common_failure()`.
+    The command pipeline used:
         ```
         awk '$9 ~ /^[4-5][0-9]{2}$/ {print $9, $1}' "$Filename" | sort | uniq -c | awk -v Limit="$Limit" '
     {
@@ -111,8 +111,8 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
         - Then it sorts and prints the results in the required pattern specified in the instruction.
 
 ### 6. -t (Bytes Sent):
-    - Function: `IP_most_bytes()`.
-    - The command pipeline used:
+    Function: `IP_most_bytes()`.
+    The command pipeline used:
         ```
         awk '{sum[$1]+=$10} END {for (ip in sum) print ip, sum[ip]}' "$Filename" | sort -k2 -rn | limit_output
         ``` 
@@ -122,8 +122,8 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
         - `limit_output`: Limits the result based on the $Limit value.
 
 ### Error handling:
-- `command_check_number()`: Verifies only one command (-c, -2, -r, -F, or -t) is issued.
-- `command_check_blank()`: Ensures a command is provided, prompting an error if missing.
-- `check_limit()`: Validates that the limit value is a valid integer.
-- `check_filename()`: Ensures a valid logfile is provided and checks if it ends with .log.
-- `usage()`: Echoes the usage instructions every time an error occurs, providing guidance on the correct input format.
+    `command_check_number()`: Verifies only one command (-c, -2, -r, -F, or -t) is issued.
+    `command_check_blank()`: Ensures a command is provided, prompting an error if missing.
+    `check_limit()`: Validates that the limit value is a valid integer.
+    `check_filename()`: Ensures a valid logfile is provided and checks if it ends with .log.
+    `usage()`: Echoes the usage instructions every time an error occurs, providing guidance on the correct input format.
