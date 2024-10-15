@@ -127,3 +127,6 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
     `check_limit()`: Validates that the limit value is a valid integer.
     `check_filename()`: Ensures a valid logfile is provided and checks if it ends with .log.
     `usage()`: Echoes the usage instructions every time an error occurs, providing guidance on the correct input format.
+
+## Author
+Developed by Patteera Lerdtada, Xuning Zhang, Thee Kullatee.
