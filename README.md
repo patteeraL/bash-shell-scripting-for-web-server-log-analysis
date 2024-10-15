@@ -29,14 +29,14 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
 - Function: `count_connection_attempts()`.
 - The command pipeline used:
   ```
-        awk '{print $1}' "$Filename" | sort | uniq -c | sort -nr | limit_output | awk '{print $2, $1}'
+  awk '{print $1}' "$Filename" | sort | uniq -c | sort -nr | limit_output | awk '{print $2, $1}'
   ``` 
-        - ```awk '{print $1}' "$Filename"```: Extracts the first field (IP addresses) from the logfile.
-        - ```sort```: Sorts the extracted IPs.
-        - ```uniq -c```: Counts the number of unique occurrences of each IP.
-        - ```sort -nr```: Sorts the counts in reverse numerical order.
-        - ```limit_output```: Limits the result based on the $Limit value.
-        - ```awk '{print $2, $1}'```: Rearranges the output to display the IP address first, followed by the count of connection attempts.
+- ```awk '{print $1}' "$Filename"```: Extracts the first field (IP addresses) from the logfile.
+- ```sort```: Sorts the extracted IPs.
+- ```uniq -c```: Counts the number of unique occurrences of each IP.
+- ```sort -nr```: Sorts the counts in reverse numerical order.
+- ```limit_output```: Limits the result based on the $Limit value.
+- ```awk '{print $2, $1}'```: Rearranges the output to display the IP address first, followed by the count of connection attempts.
 
 ### 3. -2 (Successful Attempts) :
     Function: `count_successful_attempts()`.
