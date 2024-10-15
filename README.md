@@ -1,6 +1,6 @@
 # bash-shell-scripting-for-web-server-log-analysis
 ### Overview
-Create a Bash script to analyze thttpd.log file from a thttpd web server, extracting key data to identify anomalies and detect potential intrusions.
+This project is to create a Bash script to analyze thttpd.log file from a thttpd web server, extracting key data to identify anomalies and detect potential intrusions.
 
 ## The usage of the log_sum.sh script is as follows:
 
