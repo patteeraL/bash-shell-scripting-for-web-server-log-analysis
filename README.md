@@ -54,14 +54,31 @@ log_sum.sh [-L N] (-c|-2|-r|-F|-t) <filename>
     - Function: `most_common()`.
     - The command pipeline used:
         ```
-        awk '{print $9, $1}' "$Filename" | sort | uniq -c | sort -k2,2r -k1,1nr | awk -v Limit="$Limit" '{count[$2]++; if (count[$2] <= Limit) { if (prev != $2) {print "";}print $2, $3; prev = $2;}}'
+        awk '{print $9, $1}' "$Filename" | sort | uniq -c | awk -v Limit="$Limit" '
+    {
+        ip_count[$2][$3] += $1
+        total_count[$2] += $1
+    }
+    END {
+        n_codes = asorti(total_count, sorted_codes, "@val_num_desc")
+
+        for (i = 1; i <= n_codes; i++) {
+            code = sorted_codes[i]
+
+            n_ips = asorti(ip_count[code], sorted_ips, "@val_num_desc")
+            for (j = 1; j <= n_ips && j <= Limit; j++) {
+                ip = sorted_ips[j]
+                print code, ip
+            }
+            print ""
+        }
+    }'
         ```    
         - `awk '{print $9, $1}'`: Extracts the result code (9th field) and the IP address (1st field).
         - `sort`: Sorts the output.
         - `uniq -c`: Counts the occurrences of each result code and IP combination.
-        - `sort -k2,2r -k1,1nr`: Sorts data by the second field (result codes) in descending order, and within that, sorts by the first field (counts of IP addresses) in numeric descending order.
         - `awk -v Limit="$Limit"`: Limits the result based on the $Limit value.
-        - '{count[$2]++; if (count[$2] <= Limit) { if (prev != $2) {print "";}print $2, $3; prev = $2;}}': Prints the results in the required pattern specified in the instruction.
+        - Then it sorts and prints the results in the required pattern specified in the instruction.
 
 ### 5. -F (Failure Codes):
     - Function: `most_common_failure()`.
