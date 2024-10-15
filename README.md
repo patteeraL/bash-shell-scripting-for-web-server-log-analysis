@@ -3,7 +3,7 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
 
 ## The usage of the log_sum.sh script is as follows:
 
-log_sum.sh [-L N] (-c|-2|-r|-F|-t) <filename>
+    log_sum.sh [-L N] (-c|-2|-r|-F|-t) <filename>
 
 ### Optional options:
 -L N: Limit the number of results to N (Argument N required)
@@ -84,14 +84,31 @@ log_sum.sh [-L N] (-c|-2|-r|-F|-t) <filename>
     - Function: `most_common_failure()`.
     - The command pipeline used:
         ```
-        awk '$9 ~ /^[4-5][0-9]{2}$/ {print $9, $1}' "$Filename" | sort | uniq -c | sort -k2,2r -k1,1nr | awk -v Limit="$Limit" '{count[$2]++; if (count[$2] <= Limit) { if (prev != $2) {print "";}print $2, $3; prev = $2;}}'
+        awk '$9 ~ /^[4-5][0-9]{2}$/ {print $9, $1}' "$Filename" | sort | uniq -c | awk -v Limit="$Limit" '
+    {
+        ip_count[$2][$3] += $1
+        total_count[$2] += $1
+    }
+    END {
+        n_codes = asorti(total_count, sorted_codes, "@val_num_desc")
+
+        for (i = 1; i <= n_codes; i++) {
+            code = sorted_codes[i]
+
+            n_ips = asorti(ip_count[code], sorted_ips, "@val_num_desc")
+            for (j = 1; j <= n_ips && j <= Limit; j++) {
+                ip = sorted_ips[j]
+                print code, ip
+            }
+            print ""
+        }
+    }'
         ``` 
         - `awk '$9 ~ /^[4-5][0-9]{2}$/'`: Filters the log lines where the result code is a 4xx or 5xx (client or server error).
         - `sort`: Sorts the output.
         - `uniq -c`: Counts the occurrences of each error result code and IP combination.
-        - `sort -k2,2r -k1,1nr`: Sorts data by the second field (result codes) in descending order, and within that, sorts by the first field (counts of IP addresses) in numeric descending order.
         - `awk -v Limit="$Limit"`: Limits the result based on the $Limit value.
-        - '{count[$2]++; if (count[$2] <= Limit) { if (prev != $2) {print "";}print $2, $3; prev = $2;}}': Prints the results in the required pattern specified in the instruction.
+        - Then it sorts and prints the results in the required pattern specified in the instruction.
 
 ### 6. -t (Bytes Sent):
     - Function: `IP_most_bytes()`.
