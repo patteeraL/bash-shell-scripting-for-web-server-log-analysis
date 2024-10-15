@@ -21,22 +21,22 @@ Create a Bash script to analyze thttpd.log file from a thttpd web server, extrac
 ## Implementation explanation:
 
 ### 1.  -L (Limit):
-    Can be called along with N (integer value to signify the limit), which will be stored in the $Limit variable.
-    $Limit is initialized as an empty string.
-    Since the -L is optional, in each command, the function `limit_output()` will be called. It checks if a limit exists and if so, the results will be limited to the value set by the $Limit variable.
+- Can be called along with N (integer value to signify the limit), which will be stored in the $Limit variable.
+- ```$Limit``` is initialized as an empty string.
+- Since the -L is optional, in each command, the function ```limit_output()``` will be called. It checks if a limit exists and if so, the results will be limited to the value set by the ```$Limit``` variable.
 
 ### 2. -c (Connection Attempts):
-    Function: `count_connection_attempts()`.
-    The command pipeline used:
-        ```
+- Function: `count_connection_attempts()`.
+- The command pipeline used:
+  ```
         awk '{print $1}' "$Filename" | sort | uniq -c | sort -nr | limit_output | awk '{print $2, $1}'
-        ``` 
-        - `awk '{print $1}' "$Filename"`: Extracts the first field (IP addresses) from the logfile.
-        - `sort`: Sorts the extracted IPs.
-        - `uniq -c`: Counts the number of unique occurrences of each IP.
-        - `sort -nr`: Sorts the counts in reverse numerical order.
-        - `limit_output`: Limits the result based on the $Limit value.
-        - `awk '{print $2, $1}'`: Rearranges the output to display the IP address first, followed by the count of connection attempts.
+  ``` 
+        - ```awk '{print $1}' "$Filename"```: Extracts the first field (IP addresses) from the logfile.
+        - ```sort```: Sorts the extracted IPs.
+        - ```uniq -c```: Counts the number of unique occurrences of each IP.
+        - ```sort -nr```: Sorts the counts in reverse numerical order.
+        - ```limit_output```: Limits the result based on the $Limit value.
+        - ```awk '{print $2, $1}'```: Rearranges the output to display the IP address first, followed by the count of connection attempts.
 
 ### 3. -2 (Successful Attempts) :
     Function: `count_successful_attempts()`.
